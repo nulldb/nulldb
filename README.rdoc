@@ -49,6 +49,8 @@ include the same module inside a context:
     # ...
   end
 
+If you want to have NullDB enabled by default but disabled for particular contexts then (see this post)[http://andywaite.com/2011/5/18/rspec-disable-nulldb]
+
 NullDB::Rspec provides some custom matcher support for verifying
 expectations about interactions with the database:
 
