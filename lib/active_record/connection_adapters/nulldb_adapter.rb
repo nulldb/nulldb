@@ -73,6 +73,12 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     end
   end
 
+  class EmptyResult
+    def rows
+      []
+    end
+  end
+
   # A convenience method for integratinginto RSpec.  See README for example of
   # use.
   def self.insinuate_into_spec(config)
@@ -175,13 +181,18 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     NullObject.new
   end
 
+  def exec_query(statement, name = 'SQL', binds = [])
+    self.execution_log << Statement.new(entry_point, statement)
+    EmptyResult.new
+  end
+
   def select_rows(statement, name = nil)
     [].tap do
       self.execution_log << Statement.new(entry_point, statement)
     end
   end  
 
-  def insert(statement, name = nil, primary_key = nil, object_id = nil, sequence_name = nil)
+  def insert(statement, name = nil, primary_key = nil, object_id = nil, sequence_name = nil, binds = [])
     (object_id || next_unique_id).tap do
       with_entry_point(:insert) do
         super(statement, name, primary_key, object_id, sequence_name)
@@ -196,13 +207,13 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     end
   end
 
-  def delete(statement, name=nil)
+  def delete(statement, name=nil, binds = [])
     with_entry_point(:delete) do
       super(statement, name)
     end
   end
 
-  def select_all(statement, name=nil)
+  def select_all(statement, name=nil, binds = [])
     with_entry_point(:select_all) do
       super(statement, name)
     end
@@ -226,7 +237,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
 
   protected
 
-  def select(statement, name)
+  def select(statement, name, binds = [])
     [].tap do
       self.execution_log << Statement.new(entry_point, statement)
     end
