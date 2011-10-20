@@ -1,6 +1,7 @@
 require 'logger'
 require 'stringio'
 require 'singleton'
+require 'pathname'
 require 'active_record/connection_adapters/abstract_adapter'
 
 unless respond_to?(:tap)
@@ -159,7 +160,12 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
   def columns(table_name, name = nil)
     if @tables.size <= 1
       ActiveRecord::Migration.verbose = false
-      Kernel.load(File.join(Rails.root, @schema_path))
+      schema_path = if Pathname(@schema_path).absolute?
+                      @schema_path
+                    else
+                      File.join(Rails.root, @schema_path)
+                    end
+      Kernel.load(schema_path)
     end
 
     if table = @tables[table_name]
