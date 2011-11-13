@@ -81,14 +81,14 @@ module NullDB::RSpec::NullifiedDatabase
   end
 
   def self.nullify_contextually?(other)
-    rspec_root = defined?(RSpec) ? RSpec : Spec
-    if defined? rspec_root::Rails::RailsExampleGroup
-      other.included_modules.include?(rspec_root::Rails::RailsExampleGroup)
+    rspec_root = defined?(RSpec) ? RSpec::Rails : Spec::Rails::Example
+    if defined? rspec_root::RailsExampleGroup
+      other.included_modules.include?(rspec_root::RailsExampleGroup)
     else
-      other.included_modules.include?(rspec_root::Rails::ModelExampleGroup) ||
-        other.included_modules.include?(rspec_root::Rails::ControllerExampleGroup) ||
-        other.included_modules.include?(rspec_root::Rails::ViewExampleGroup) ||
-        other.included_modules.include?(rspec_root::Rails::HelperExampleGroup)
+      other.included_modules.include?(rspec_root::ModelExampleGroup) ||
+        other.included_modules.include?(rspec_root::ControllerExampleGroup) ||
+        other.included_modules.include?(rspec_root::ViewExampleGroup) ||
+        other.included_modules.include?(rspec_root::HelperExampleGroup)
     end
   end
 
