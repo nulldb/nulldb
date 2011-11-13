@@ -16,7 +16,7 @@ module NullDB::RSpec::NullifiedDatabase
 
     def matches?(connection)
       log = connection.execution_log_since_checkpoint
-      if entry_point == :anything
+      if @entry_point == :anything
         not log.empty?
       else
         log.include?(NullDBAdapter::Statement.new(@entry_point))

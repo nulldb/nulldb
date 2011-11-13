@@ -229,6 +229,24 @@ describe "NullDB" do
     @employee.connection.execute("blah").finish
   end
 
+  describe 'have_executed rspec matcher' do
+    module NullDB::RSpec::NullifiedDatabase
+      # avoid checking RSpec::Rails (undefined) constants
+      def self.nullify_contextually?(*args);true;end
+    end
+
+    include NullDB::RSpec::NullifiedDatabase
+
+    it 'when an execution was expected, passes if an execution was made' do
+      Employee.create
+      Employee.connection.should have_executed(:insert)
+    end
+
+    it 'when an execution was not expected, passes if an execution was not made' do
+      Employee.connection.should_not have_executed(:insert)
+    end
+  end
+
   def should_have_column(klass, col_name, col_type)
     col = klass.columns_hash[col_name.to_s]
     col.should_not be_nil
