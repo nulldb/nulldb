@@ -3,6 +3,7 @@ require 'stringio'
 require 'singleton'
 require 'pathname'
 require 'active_record/connection_adapters/abstract_adapter'
+require 'nulldb/core'
 
 unless respond_to?(:tap)
   class Object
@@ -22,6 +23,10 @@ unless respond_to?(:try)
         __send__(*a, &b)
       end
     end
+  end
+
+  class NilClass
+    def try(*args); nil; end
   end
 end
 
@@ -175,7 +180,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
       schema_path = if Pathname(@schema_path).absolute?
                       @schema_path
                     else
-                      File.join(Rails.root, @schema_path)
+                      File.join(NullDB.configuration.project_root, @schema_path)
                     end
       Kernel.load(schema_path)
     end

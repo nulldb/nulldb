@@ -24,11 +24,7 @@ end
 class TablelessModel < ActiveRecord::Base
 end
 
-module Rails
-  def self.root
-    'Rails.root'
-  end
-end
+NullDB.configure {|ndb| ndb.project_root = 'Rails.root'}
 
 describe "NullDB with no schema pre-loaded" do
   before :each do
