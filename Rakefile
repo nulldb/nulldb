@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
-require 'thread'
+require 'appraisal'
+require 'rspec/core/rake_task'
 
 begin
   require 'jeweler'
@@ -16,7 +17,6 @@ begin
     gem.add_dependency 'activerecord', '>= 2.0.0'
     gem.add_development_dependency "rspec", ">= 1.2.9"
 
-    gem.files.exclude 'vendor/ginger'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
@@ -27,58 +27,10 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
 
-# We want to test ActiveRecord 3 against RSpec 2.x, and
-# prior versions of AR against RSpec 1.x.  The task
-# definitions are different, and in order to allow ginger
-# to invoke a single task (:spec_for_ginger) that runs the
-# specs against the right version of RSpec, we dynamically
-# define the spec task with this method.
-def define_specs_task
-  require 'active_record'
-  require 'active_record/version'
+RSpec::Core::RakeTask.new(:spec)
+task :default => :spec
 
-  if ActiveRecord::VERSION::MAJOR > 2
-    # rspec 2
-    require "rspec/core/rake_task"
-    RSpec::Core::RakeTask.new(:specs) do |spec|
-      spec.pattern = "spec/*_spec.rb"
-    end
-  else
-    # rspec 1
-    require 'spec/rake/spectask'
-    Spec::Rake::SpecTask.new(:specs) do |spec|
-      spec.libs << 'lib' << 'spec'
-      spec.spec_files = FileList['spec/**/*_spec.rb']
-    end
-  end
-end
-
-desc "Run the specs"
-task :spec do
-  define_specs_task
-  Rake::Task[:specs].invoke
-end
-
-task :spec_for_ginger do
-  $LOAD_PATH << File.join(*%w[vendor ginger lib])
-  require 'ginger'
-  define_specs_task
-  Rake::Task[:specs].invoke
-end
-
-task :spec => :check_dependencies if defined?(Jeweler)
-
-desc 'Run ginger tests'
-task :ginger do
-  $LOAD_PATH << File.join(*%w[vendor ginger lib])
-  ARGV.clear
-  ARGV << 'spec_for_ginger'
-  load File.join(*%w[vendor ginger bin ginger])
-end
-
-task :default => :ginger
-
-require 'rake/rdoctask'
+require 'rdoc/task'
 Rake::RDocTask.new do |rd|
   rd.main = "README.rdoc"
   rd.rdoc_files.include("README.rdoc", "LICENSE", "lib/**/*.rb")

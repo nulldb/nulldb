@@ -120,6 +120,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     @schema_path    = config.fetch(:schema){ "db/schema.rb" }
     @config         = config.merge(:adapter => :nulldb)
     super(nil, @logger)
+    @visitor = Arel::Visitors::ToSql.new self if defined?(Arel::Visitors::ToSql)
   end
 
   # A log of every statement that has been "executed" by this connection adapter

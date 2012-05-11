@@ -1,7 +1,5 @@
 require 'rubygems'
 
-$LOAD_PATH << File.join(File.dirname(__FILE__), *%w[.. vendor ginger lib])
-require 'ginger'
 require 'active_record'
 require 'active_record/version'
 $: << File.join(File.dirname(__FILE__), "..", "lib")
