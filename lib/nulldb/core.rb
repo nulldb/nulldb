@@ -23,7 +23,7 @@ module NullDB
 
     def restore
       if @prev_connection
-        ActiveRecord::Base.establish_connection(@prev_connection)
+        ActiveRecord::Base.establish_connection(@prev_connection.config)
       end
     end
 

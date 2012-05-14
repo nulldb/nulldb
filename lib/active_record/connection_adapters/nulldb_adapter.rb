@@ -85,6 +85,9 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
 
   TableDefinition = ActiveRecord::ConnectionAdapters::TableDefinition
 
+  class IndexDefinition < Struct.new(:table, :name, :unique, :columns, :lengths, :orders)
+  end
+
   class NullObject
     def method_missing(*args, &block)
       nil
@@ -117,6 +120,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     @logger         = Logger.new(@log)
     @last_unique_id = 0
     @tables         = {'schema_info' =>  TableDefinition.new(nil)}
+    @indexes        = Hash.new { |hash, key| hash[key] = [] }
     @schema_path    = config.fetch(:schema){ "db/schema.rb" }
     @config         = config.merge(:adapter => :nulldb)
     super(nil, @logger)
@@ -161,6 +165,35 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     @tables[table_name] = table_definition
   end
 
+  def add_index(table_name, column_names, options = {})
+    index_name, index_type, ignore = add_index_options(table_name, column_names, options)
+    @indexes[table_name] << IndexDefinition.new(table_name, index_name, (index_type == 'UNIQUE'), column_names, [], [])
+  end
+
+  unless instance_methods.include? :add_index_options
+    def add_index_options(table_name, column_name, options = {})
+      column_names = Array.wrap(column_name)
+      index_name   = index_name(table_name, :column => column_names)
+
+      if Hash === options # legacy support, since this param was a string
+        index_type = options[:unique] ? "UNIQUE" : ""
+        index_name = options[:name].to_s if options.key?(:name)
+      else
+        index_type = options
+      end
+
+      if index_name.length > index_name_length
+        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters"
+      end
+      if index_name_exists?(table_name, index_name, false)
+        raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' already exists"
+      end
+      index_columns = quoted_columns_for_index(column_names, options).join(", ")
+
+      [index_name, index_type, index_columns]
+    end
+  end
+
   def add_fk_constraint(*args)
     # NOOP
   end
@@ -198,6 +231,11 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     else
       []
     end
+  end
+
+  # Retrieve table indexes as defined by the schema
+  def indexes(table_name, name = nil)
+    @indexes[table_name]
   end
 
   def execute(statement, name = nil)

@@ -75,6 +75,10 @@ describe "NullDB" do
         t.integer :widget_id
       end
 
+      add_index "employees", ["name"], :name => "index_employees_on_name"
+      add_index "employees", ["employee_number"], :name => "index_employees_on_employee_number", :unique => true
+      add_index "employees_widgets", ["employee_id", "widget_id"], :name => "my_index"
+      
       add_fk_constraint "foo", "bar", "baz", "buz", "bungle"
       add_pk_constraint "foo", "bar", {}, "baz", "buz"
     end
@@ -228,6 +232,24 @@ describe "NullDB" do
     col.should_not be_nil
     col.type.should == col_type
   end
+  
+  it "should support adding indexes" do
+    Employee.connection.indexes('employees').size.should == 2
+    Employee.connection.indexes('employees_widgets').size.should == 1
+  end
+  
+  it "should support unique indexes" do
+    Employee.connection.indexes('employees').detect{|idx| idx.columns == ["name"]}.unique.should be_false
+    Employee.connection.indexes('employees').detect{|idx| idx.columns == ["employee_number"]}.unique.should be_true
+  end
+  
+  it "should support multi-column indexes" do
+    Employee.connection.indexes('employees_widgets').first.columns.should == ["employee_id", "widget_id"]
+  end
+  
+  it "should support custom index names" do
+    Employee.connection.indexes('employees_widgets').first.name.should == 'my_index'
+  end
 end
 
 # need a fallback db for contextual nullification
@@ -246,6 +268,7 @@ describe NullDB::RSpec::NullifiedDatabase do
     before { NullDB.checkpoint }
 
     it 'passes if an execution was made' do
+      Kernel.stub(:load)
       Employee.create
       Employee.connection.should have_executed(:insert)
     end

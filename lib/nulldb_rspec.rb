@@ -81,8 +81,11 @@ module NullDB::RSpec::NullifiedDatabase
   end
 
   def self.nullify_contextually?(other)
-    rspec_root = defined?(RSpec) ? RSpec::Core : Spec
-    other.is_a?(rspec_root::ExampleGroup)
+    if defined?(RSpec)
+      other < RSpec::Core::ExampleGroup
+    else
+      other.is_a? Spec::ExampleGroup
+    end
   end
 
   def self.nullify_database(receiver)
