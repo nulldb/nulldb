@@ -25,7 +25,6 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "activerecord-nulldb-adapter.gemspec",
-     "ginger_scenarios.rb",
      "lib/nulldb.rb",
      "lib/activerecord-nulldb-adapter.rb",
      "lib/active_record/connection_adapters/nulldb_adapter.rb",

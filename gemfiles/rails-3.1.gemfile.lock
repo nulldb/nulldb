@@ -1,5 +1,5 @@
 PATH
-  remote: /Users/theocummings/cp/nulldb
+  remote: /Users/mattvanhorn/projects/mvh_nulldb
   specs:
     activerecord-nulldb-adapter (0.2.1)
       activerecord (>= 2.0.0)
