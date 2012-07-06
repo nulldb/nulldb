@@ -17,7 +17,10 @@ module NullDB
     end
 
     def nullify(options={})
-      @prev_connection = ActiveRecord::Base.connection_pool.try(:spec)
+      begin
+        @prev_connection = ActiveRecord::Base.connection_pool.try(:spec)
+      rescue ActiveRecord::ConnectionNotEstablished
+      end
       ActiveRecord::Base.establish_connection(options.merge(:adapter => :nulldb))
     end
 

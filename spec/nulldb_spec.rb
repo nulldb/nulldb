@@ -232,6 +232,7 @@ describe "NullDB" do
     col.should_not be_nil
     col.type.should == col_type
   end
+
   
   it "should support adding indexes" do
     Employee.connection.indexes('employees').size.should == 2
@@ -249,6 +250,11 @@ describe "NullDB" do
   
   it "should support custom index names" do
     Employee.connection.indexes('employees_widgets').first.name.should == 'my_index'
+  end
+
+  it 'should handle ActiveRecord::ConnectionNotEstablished' do
+    ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
+    lambda { NullDB.nullify }.should_not raise_error(ActiveRecord::ConnectionNotEstablished)
   end
 end
 
