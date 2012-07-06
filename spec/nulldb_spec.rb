@@ -228,6 +228,11 @@ describe "NullDB" do
     col.should_not be_nil
     col.type.should == col_type
   end
+
+  it 'should handle ActiveRecord::ConnectionNotEstablished' do
+    ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
+    lambda { NullDB.nullify }.should_not raise_error(ActiveRecord::ConnectionNotEstablished)
+  end
 end
 
 # need a fallback db for contextual nullification
