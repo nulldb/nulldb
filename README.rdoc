@@ -96,22 +96,11 @@ http://www.dcmanges.com/blog/rails-unit-record-test-without-the-database.
 NullDB is one way to separate your unit tests from the database.  It
 was inspired by the ARBS[http://arbs.rubyforge.org/] and
 UnitRecord[http://unit-test-ar.rubyforge.org/] libraries.  It differs
-from them in a couple of ways:
-
-1. It works.  At the time of writing both ARBS and UnitRecord were
-   not working for me out of the box with Rails 2.0. 
-
-2. It avoids monkey-patching as much as possible.  Rather than
-   re-wiring the secret inner workings of ActiveRecord (and thus being
-   tightly coupled to those inner workings), NullDB implements the
-   same [semi-]well-documented public interface that the other standard
-   database adapters, like MySQL and SQLServer, implement.
-
-3. UnitRecord takes the approach of eliminating database interaction
-   in tests by turning almost every database interaction into an
-   exception.  NullDB recognizes that ActiveRecord objects typically
-   can't take two steps without consulting the database, so instead it
-   turns database interactions into no-ops.
+from them in that rather than modifying parts of ActiveRecord, it
+implements the same [semi-]well-documented public interface that the
+other standard database adapters, like MySQL and SQLServer,
+implement. This has enabled it to evolve to support new ActiveRecord
+versions relatively easily.
 
 One concrete advantage of this null-object pattern design is that it
 is possible with NullDB to test +after_save+ hooks.  With NullDB, you
