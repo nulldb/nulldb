@@ -78,7 +78,7 @@ describe "NullDB" do
       add_index "employees", ["name"], :name => "index_employees_on_name"
       add_index "employees", ["employee_number"], :name => "index_employees_on_employee_number", :unique => true
       add_index "employees_widgets", ["employee_id", "widget_id"], :name => "my_index"
-      
+
       add_fk_constraint "foo", "bar", "baz", "buz", "bungle"
       add_pk_constraint "foo", "bar", {}, "baz", "buz"
     end
@@ -151,30 +151,30 @@ describe "NullDB" do
   end
 
   it "should log executed SQL statements" do
-    cxn = @employee.connection
+    cxn = Employee.connection
     exec_count = cxn.execution_log.size
     @employee.save!
     cxn.execution_log.size.should == (exec_count + 1)
   end
 
   it "should have the adapter name 'NullDB'" do
-    @employee.connection.adapter_name.should == "NullDB"
+    Employee.connection.adapter_name.should == "NullDB"
   end
 
   it "should support migrations" do
-    @employee.connection.supports_migrations?.should be_true
+    Employee.connection.supports_migrations?.should be_true
   end
 
   it "should always have a schema_info table definition" do
-    @employee.connection.tables.should include("schema_info")
+    Employee.connection.tables.should include("schema_info")
   end
 
   it "should return an empty array from #select" do
-    @employee.connection.select_all("who cares", "blah").should == []
+    Employee.connection.select_all("who cares", "blah").should == []
   end
 
   it "should provide a way to set log checkpoints" do
-    cxn = @employee.connection
+    cxn = Employee.connection
     @employee.save!
     cxn.execution_log_since_checkpoint.size.should > 0
     cxn.checkpoint!
@@ -195,7 +195,7 @@ describe "NullDB" do
   end
 
   it "should tag logged statements with their entry point" do
-    cxn = @employee.connection
+    cxn = Employee.connection
 
     should_not_contain_statement(cxn, :insert)
     @employee.save
@@ -214,17 +214,22 @@ describe "NullDB" do
 
     cxn.checkpoint!
     should_not_contain_statement(cxn, :select_all)
-    Employee.find(:all)
+    Employee.all.each do |emp|; end
     should_contain_statement(cxn, :select_all)
 
     cxn.checkpoint!
     should_not_contain_statement(cxn, :select_value)
     Employee.count_by_sql("frobozz")
     should_contain_statement(cxn, :select_value)
+
+    cxn.checkpoint!
+    should_not_contain_statement(cxn, :select_values)
+    cxn.select_values("")
+    should_contain_statement(cxn, :select_values)
   end
 
   it "should allow #finish to be called on the result of #execute" do
-    @employee.connection.execute("blah").finish
+    Employee.connection.execute("blah").finish
   end
 
   def should_have_column(klass, col_name, col_type)
@@ -233,21 +238,21 @@ describe "NullDB" do
     col.type.should == col_type
   end
 
-  
+
   it "should support adding indexes" do
     Employee.connection.indexes('employees').size.should == 2
     Employee.connection.indexes('employees_widgets').size.should == 1
   end
-  
+
   it "should support unique indexes" do
     Employee.connection.indexes('employees').detect{|idx| idx.columns == ["name"]}.unique.should be_false
     Employee.connection.indexes('employees').detect{|idx| idx.columns == ["employee_number"]}.unique.should be_true
   end
-  
+
   it "should support multi-column indexes" do
     Employee.connection.indexes('employees_widgets').first.columns.should == ["employee_id", "widget_id"]
   end
-  
+
   it "should support custom index names" do
     Employee.connection.indexes('employees_widgets').first.name.should == 'my_index'
   end
