@@ -110,7 +110,9 @@ module NullDB::RSpec::NullifiedDatabase
     end
 
     receiver.before :each do
-      ActiveRecord::Base.connection.checkpoint!
+      if ActiveRecord::Base.connection.respond_to?(:checkpoint!)
+        ActiveRecord::Base.connection.checkpoint!
+      end
     end
 
     receiver.after :all do
