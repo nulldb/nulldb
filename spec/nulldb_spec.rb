@@ -26,8 +26,8 @@ NullDB.configure {|ndb| ndb.project_root = 'Rails.root'}
 
 describe "NullDB with no schema pre-loaded" do
   before :each do
-    Kernel.stub!(:load)
-    ActiveRecord::Migration.stub!(:verbose=)
+    Kernel.stub(:load)
+    ActiveRecord::Migration.stub(:verbose=)
   end
 
   it "should load Rails.root/db/schema.rb if no alternate is specified" do
@@ -259,7 +259,7 @@ describe "NullDB" do
 
   it 'should handle ActiveRecord::ConnectionNotEstablished' do
     ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
-    lambda { NullDB.nullify }.should_not raise_error(ActiveRecord::ConnectionNotEstablished)
+    expect { NullDB.nullify }.to_not raise_error
   end
 end
 
