@@ -113,12 +113,16 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
   # use.
   def self.insinuate_into_spec(config)
     config.before :all do
-      ActiveRecord::Base.establish_connection(:adapter => :nulldb)
+      ActiveRecord::Base.establish_connection(:adapter => adapter)
     end
 
     config.after :all do
       ActiveRecord::Base.establish_connection(:test)
     end
+  end
+
+  def self.adapter
+    :nulldb
   end
 
   # Recognized options:
@@ -131,7 +135,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter <
     @tables         = {'schema_info' => new_table_definition(nil)}
     @indexes        = Hash.new { |hash, key| hash[key] = [] }
     @schema_path    = config.fetch(:schema){ "db/schema.rb" }
-    @config         = config.merge(:adapter => :nulldb)
+    @config         = config.merge(:adapter => self.class.adapter)
     super(nil, @logger)
     @visitor = Arel::Visitors::ToSql.new self if defined?(Arel::Visitors::ToSql)
   end

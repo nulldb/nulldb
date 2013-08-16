@@ -21,7 +21,7 @@ module NullDB
         @prev_connection = ActiveRecord::Base.connection_pool.try(:spec)
       rescue ActiveRecord::ConnectionNotEstablished
       end
-      ActiveRecord::Base.establish_connection(options.merge(:adapter => :nulldb))
+      ActiveRecord::Base.establish_connection({:adapter => :nulldb}.merge(options))
     end
 
     def restore
