@@ -281,9 +281,16 @@ describe "NullDB" do
         Employee.connection.indexes('employees_widgets').first.name.should == 'my_index'
       end
 
-      it 'should handle ActiveRecord::ConnectionNotEstablished' do
-        ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
-        expect { NullDB.nullify }.to_not raise_error
+      describe '.nullify' do
+        it 'should handle ActiveRecord::ConnectionNotEstablished' do
+          ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
+          expect { NullDB.nullify }.to_not raise_error
+        end
+
+        it 'should return us to the proper adapter' do
+          NullDB.nullify(:adapter => adapter)
+          expect(ActiveRecord::Base.connection.class.adapter).to eq(adapter)
+        end
       end
     end
   end
