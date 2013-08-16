@@ -22,7 +22,7 @@ end
 namespace :db do
   namespace :test do
     wrap_task :purge do |wrapped_task|
-      if ActiveRecord::Base.configurations["test"]["adapter"] == "nulldb"
+      if ['nulldb', 'nulldb_postgres'].include?(ActiveRecord::Base.configurations["test"]["adapter"])
         # NO-OP
       else
         wrapped_task.invoke

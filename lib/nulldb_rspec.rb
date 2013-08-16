@@ -1,4 +1,5 @@
 require 'active_record/connection_adapters/nulldb_adapter'
+require 'active_record/connection_adapters/nulldb_postgres_adapter'
 
 module NullDB
   module RSpec
@@ -34,6 +35,20 @@ module NullDB::RSpec::NullifiedDatabase
     def negative_failure_message
       " executed #{@entry_point} statement when it should not have"
     end
+  end
+
+  def self.adapter
+    if postgresql_configuration?
+      :nulldb_postgres
+    else
+      :nulldb
+    end
+  end
+
+  def self.postgresql_configuration?
+    ActiveRecord::Base.configurations \
+      && ActiveRecord::Base.configurations['test'] \
+      && ActiveRecord::Base.configurations['test']['adapter'] == 'postgresql'
   end
 
   def self.globally_nullify_database
@@ -90,7 +105,8 @@ module NullDB::RSpec::NullifiedDatabase
 
   def self.nullify_database(receiver)
     receiver.before :all do
-      ActiveRecord::Base.establish_connection(:adapter => :nulldb)
+      ActiveRecord::Base.establish_connection(
+        :adapter => NullDB::RSpec::NullifiedDatabase.adapter)
     end
 
     receiver.before :each do
