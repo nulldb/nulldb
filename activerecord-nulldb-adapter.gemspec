@@ -7,6 +7,7 @@ Gem::Specification.new do |s|
   s.date = %q{2011-09-12}
   s.description = %q{A database backend that translates database interactions into no-ops. Using NullDB enables you to test your model business logic - including after_save hooks - without ever touching a real database.}
   s.email = %q{myron.marston@gmail.com}
+  s.license = %q{MIT}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
