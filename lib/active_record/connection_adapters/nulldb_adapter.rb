@@ -4,6 +4,8 @@ require 'singleton'
 require 'pathname'
 require 'active_support'
 require 'active_record/connection_adapters/abstract_adapter'
+require 'active_record/errors'
+require 'active_record/migration'
 require 'nulldb/core'
 
 unless respond_to?(:tap)
