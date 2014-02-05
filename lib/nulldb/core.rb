@@ -1,3 +1,5 @@
+require 'active_support'
+require 'active_support/deprecation'
 require 'active_record/connection_adapters/nulldb_adapter'
 
 module NullDB

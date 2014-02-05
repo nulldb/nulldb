@@ -1,5 +1,12 @@
 require 'rubygems'
 
+# Optional simplecov loading
+begin
+  require 'simplecov'
+  SimpleCov.start
+rescue LoadError
+end
+
 require 'active_record'
 require 'active_record/version'
 $: << File.join(File.dirname(__FILE__), "..", "lib")
@@ -26,8 +33,8 @@ NullDB.configure {|ndb| ndb.project_root = 'Rails.root'}
 
 describe "NullDB with no schema pre-loaded" do
   before :each do
-    Kernel.stub!(:load)
-    ActiveRecord::Migration.stub!(:verbose=)
+    Kernel.stub(:load)
+    ActiveRecord::Migration.stub(:verbose=)
   end
 
   it "should load Rails.root/db/schema.rb if no alternate is specified" do
@@ -75,7 +82,7 @@ describe "NullDB" do
         t.integer :widget_id
       end
 
-      add_index "employees", ["name"], :name => "index_employees_on_name"
+      add_index "employees", :name, :name => "index_employees_on_name"
       add_index "employees", ["employee_number"], :name => "index_employees_on_employee_number", :unique => true
       add_index "employees_widgets", ["employee_id", "widget_id"], :name => "my_index"
 
@@ -244,6 +251,12 @@ describe "NullDB" do
     Employee.connection.execute("blah").finish
   end
 
+  it "should #to_a return empty array on the result of #execute" do
+    result = Employee.connection.execute("blah")
+    result.to_a.should be_a Array
+    result.to_a.should be_empty
+  end
+
   def should_have_column(klass, col_name, col_type)
     col = klass.columns_hash[col_name.to_s]
     col.should_not be_nil
@@ -270,7 +283,7 @@ describe "NullDB" do
 
   it 'should handle ActiveRecord::ConnectionNotEstablished' do
     ActiveRecord::Base.should_receive(:connection_pool).and_raise(ActiveRecord::ConnectionNotEstablished)
-    lambda { NullDB.nullify }.should_not raise_error(ActiveRecord::ConnectionNotEstablished)
+    lambda { NullDB.nullify }.should_not raise_error
   end
 end
 

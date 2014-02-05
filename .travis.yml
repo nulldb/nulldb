@@ -1,14 +1,22 @@
 language: ruby
+cache: bundler
+
 rvm:
-  - 1.9.2
   - 1.9.3
-  - jruby-19mode
-  - rbx-19mode
-  - ruby-head
-  - jruby-head
-  - rbx-head
+  - 2.0.0
+  - 2.1.0
+  - jruby
+  - rbx
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - rvm: jruby
+    - rvm: rbx
+
 gemfile:
-  - Gemfile
-  - gemfiles/rails-3.0.gemfile
-  - gemfiles/rails-3.1.gemfile
-  - gemfiles/rails-3.2.gemfile
+  - gemfiles/activerecord_2.3.gemfile
+  - gemfiles/activerecord_3.0.gemfile
+  - gemfiles/activerecord_3.1.gemfile
+  - gemfiles/activerecord_3.2.gemfile
+  - gemfiles/activerecord_4.0.gemfile

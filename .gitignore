@@ -1,5 +1,28 @@
+# generated coverage
+coverage
+coverage.data
+
+# docs
+rdoc
+doc
+.yardoc
+
+# bundler
+.bundle
+*.lock
+
+# jeweler
 pkg
-html
-*.gem
-.ginger
+
+# mac os specific
+.DS_Store
+
+# vim
+*.swp
+
+# rvm
 .rvmrc
+.ruby-*
+
+# ginger
+.ginger
