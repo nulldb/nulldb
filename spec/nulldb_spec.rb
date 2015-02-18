@@ -249,7 +249,7 @@ describe "NullDB" do
 
   def should_have_column(klass, col_name, col_type)
     col = klass.columns_hash[col_name.to_s]
-    expect(col.type).to eq col_type
+    expect(col.sql_type).to eq col_type
   end
 
 
