@@ -15,24 +15,28 @@ module NullDB::RSpec::NullifiedDatabase
     end
 
     def matches?(connection)
-      log = connection.execution_log_since_checkpoint
+      @log = connection.execution_log_since_checkpoint
       if @entry_point == :anything
-        not log.empty?
+        not @log.empty?
       else
-        log.include?(NullDBAdapter::Statement.new(@entry_point))
+        @log.include?(NullDBAdapter::Statement.new(@entry_point))
       end
     end
 
     def description
-      "connection should execute #{@entry_point} statement"
+      "connection should execute '#{@entry_point}' statement"
     end
 
     def failure_message
-      " did not execute #{@entry_point} statement when it should have"
+      [" did not execute '#{@entry_point}' statement when it should have. Statements executed:", *statements_executed].join("\n")
     end
 
     def failure_message_when_negated
-      " executed #{@entry_point} statement when it should not have"
+      [" executed '#{@entry_point}' statement when it should not have. Statements executed:", *statements_executed].join("\n")
+    end
+
+    def statements_executed
+      @log.map(&:content)
     end
   end
 
