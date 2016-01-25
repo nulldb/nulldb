@@ -181,7 +181,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
   def delete(statement, name=nil, binds = [])
     with_entry_point(:delete) do
-      super(statement, name)
+      super(statement, name).length
     end
   end
 
