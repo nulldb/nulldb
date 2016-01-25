@@ -14,5 +14,4 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
       @columns ||= []
     end
   end
-
 end

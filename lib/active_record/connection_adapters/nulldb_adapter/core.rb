@@ -129,14 +129,26 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       Kernel.load(schema_path)
     end
 
+    takes_cast_type = defined?(ActiveRecord::Type::Value)
+
     if table = @tables[table_name]
       table.columns.map do |col_def|
-        ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
-          col_def.name.to_s,
-          col_def.default,
-          col_def.type,
-          col_def.null
-        )
+        if takes_cast_type
+          ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
+            col_def.name.to_s,
+            col_def.default,
+            lookup_cast_type(col_def.type),
+            col_def.type,
+            col_def.null
+          )
+        else
+          ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
+            col_def.name.to_s,
+            col_def.default,
+            col_def.type,
+            col_def.null
+          )
+        end
       end
     else
       []
