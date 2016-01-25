@@ -134,6 +134,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
         ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
           col_def.name.to_s,
           col_def.default,
+          lookup_cast_type(col_def.type),
           col_def.type,
           col_def.null
         )
