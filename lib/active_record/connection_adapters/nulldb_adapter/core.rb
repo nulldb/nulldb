@@ -131,12 +131,18 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
     if table = @tables[table_name]
       table.columns.map do |col_def|
-        ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
+        column = ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(
           col_def.name.to_s,
           col_def.default,
           col_def.type,
-          col_def.null
+          col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
         )
+        # hack to make #limit work since we're passing a broken sql_type to the initializer and thus base#extract_limit doesn't work
+        # we could instead pass type_to_sql(type, ..) instead to make downstream #extract_limit work but this is easier given we know the limit
+        # and don't need to know anything about sql
+        # we could also redefine the #limit method itself to be less implementation dependent
+        column.instance_variable_set('@limit', col_def.limit)
+        column
       end
     else
       []
