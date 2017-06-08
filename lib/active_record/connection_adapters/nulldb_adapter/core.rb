@@ -216,6 +216,10 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     columns(table_name).detect { |col| col.sql_type == :primary_key }.try(:name)
   end
 
+  def active?
+    true
+  end
+
   protected
 
   def select(statement, name = nil, binds = [])
