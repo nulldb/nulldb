@@ -31,7 +31,7 @@ module NullDB::RSpec::NullifiedDatabase
       " did not execute #{@entry_point} statement when it should have"
     end
 
-    def negative_failure_message
+    def failure_message_when_negated
       " executed #{@entry_point} statement when it should not have"
     end
   end
