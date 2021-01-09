@@ -325,12 +325,22 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def default_column_arguments(col_def)
     [
       col_def.name.to_s,
-      col_def.default,
+      get_default(col_def),
       ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type.to_s, limit: col_def.limit),
       col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
     ]
   end
 
+  def get_default(col_def)
+    return nil unless col_def.default.present?
+
+    if col_def.type == :boolean
+      col_def.default ? '1' : '0'
+    else
+      col_def.default
+    end
+
+  end
   def initialize_args
     [nil, @logger, @config]
   end
