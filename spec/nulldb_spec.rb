@@ -268,7 +268,7 @@ describe "NullDB" do
   end
 
   it "should support unique indexes" do
-    expect( Employee.connection.indexes('employees').detect{|idx| idx.columns == ["name"]}.unique ).to eq false
+    expect( Employee.connection.indexes('employees').detect{|idx| idx.columns == ["name"]}.unique ).to eq nil
     expect( Employee.connection.indexes('employees').detect{|idx| idx.columns == ["employee_number"]}.unique ).to eq true
   end
 

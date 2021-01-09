@@ -85,13 +85,28 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
   def add_index(table_name, column_names, options = {})
     column_names = Array.wrap(column_names).map(&:to_s)
-    index_name, index_type, ignore = add_index_options(table_name, column_names, options)
-    @indexes[table_name] << IndexDefinition.new(table_name, index_name, (index_type == 'UNIQUE'), column_names, [], [])
+
+    index, index_type, ignore = add_index_options(table_name, column_names, options)
+
+    if index.is_a?(ActiveRecord::ConnectionAdapters::IndexDefinition)
+      @indexes[table_name] << index
+    else
+      # Rails < 6.1
+      @indexes[table_name] << IndexDefinition.new(table_name, index, index_type == 'UNIQUE' ? true : nil, column_names, [], [])
+    end
   end
 
-  def remove_index(table_name, column_name = nil, **options )
-    index_name = index_name_for_remove(table_name, column_name, options)
-    index = @indexes[table_name].reject! { |index| index.name == index_name }
+  # Rails 6.1+
+  if ActiveRecord::VERSION::MAJOR >= 6 and ActiveRecord::VERSION::MINOR > 0
+    def remove_index(table_name, column_name = nil, **options )
+      index_name = index_name_for_remove(table_name, column_name, options)
+      index = @indexes[table_name].reject! { |index| index.name == index_name }
+    end
+  else
+    def remove_index(table_name,  options = {} )
+      index_name = index_name_for_remove(table_name, options)
+      index = @indexes[table_name].reject! { |index| index.name == index_name }
+    end
   end
 
   def add_fk_constraint(*args)
@@ -204,7 +219,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def primary_key(table_name)
-    columns(table_name).detect { |col| col.sql_type == :primary_key }.try(:name)
+    columns(table_name).detect { |col| col.sql_type == 'primary_key' }.try(:name)
   end
 
   def add_column(table_name, column_name, type, options = {})
