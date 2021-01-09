@@ -340,10 +340,12 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def default_value(col_def)
+    return nil unless col_def.default.present?
+
     if col_def.type == :boolean
       col_def.default ? '1' : '0'
     else
-      col_def.default
+      col_def.default.to_s
     end
   end
 
