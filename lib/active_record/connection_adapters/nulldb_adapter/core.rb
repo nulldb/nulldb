@@ -83,16 +83,17 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     @tables[new_name.to_s] = table_definition
   end
 
-  def add_index(table_name, column_names, options = {})
+  def add_index(table_name, column_names, **options)
+    options[:unique] = false unless options.key?(:unique)
     column_names = Array.wrap(column_names).map(&:to_s)
 
-    index, index_type, ignore = add_index_options(table_name, column_names, options)
+    index, index_type, ignore = add_index_options(table_name, column_names, **options)
 
     if index.is_a?(ActiveRecord::ConnectionAdapters::IndexDefinition)
       @indexes[table_name] << index
     else
       # Rails < 6.1
-      @indexes[table_name] << IndexDefinition.new(table_name, index, index_type == 'UNIQUE' ? true : nil, column_names, [], [])
+      @indexes[table_name] << IndexDefinition.new(table_name, index, (index_type == 'UNIQUE'), column_names, [], [])
     end
   end
 
@@ -222,13 +223,13 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     columns(table_name).detect { |col| col.sql_type == 'primary_key' }.try(:name)
   end
 
-  def add_column(table_name, column_name, type, options = {})
+  def add_column(table_name, column_name, type, **options)
     super
 
     table_meta = @tables[table_name.to_s]
     return unless table_meta
 
-    table_meta.column column_name, type, options
+    table_meta.column column_name, type, **options
   end
 
   def change_column(table_name, column_name, type, options = {})
