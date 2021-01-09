@@ -1,6 +1,6 @@
 {<img src="https://badge.fury.io/rb/activerecord-nulldb-adapter.png" alt="Gem Version" />}[http://badge.fury.io/rb/activerecord-nulldb-adapter]
 {<img src="https://codeclimate.com/github/nulldb/nulldb.png" />}[https://codeclimate.com/github/nulldb/nulldb]
-{<img src="https://travis-ci.org/nulldb/nulldb.png?branch=master" alt="Build Status" />}[https://travis-ci.org/nulldb/nulldb]
+{<img src="https://github.com/nulldb/nulldb/workflows/build/badge.svg?branch=master" alt="Build Status" />}[https://github.com/nulldb/nulldb/actions]
 
 
 = The NullDB Connection Adapter Plugin
@@ -51,7 +51,7 @@ spec/rails_helper:
   require 'nulldb_rspec'
   include NullDB::RSpec::NullifiedDatabase
 
-after you load your rails environment 
+after you load your rails environment
 
   require File.expand_path('../config/environment', __dir__)
 
