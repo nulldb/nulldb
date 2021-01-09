@@ -9,10 +9,10 @@ jobs:
         gemfile: [activerecord_5.2, activerecord_6.0]
         ruby: ["2.5", "2.6", "2.7", "jruby-9.2.13.0"]
         experimental: [false]
-      include:
-        - ruby: 2.7
-          gemfile: "activerecord_master"
-          experimental: true
+        include:
+          - ruby: 2.7
+            gemfile: "activerecord_master"
+            experimental: true
 
     runs-on: ubuntu-latest
     env:
