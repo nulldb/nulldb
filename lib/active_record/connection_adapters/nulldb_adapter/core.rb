@@ -220,7 +220,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def primary_key(table_name)
-    columns(table_name).detect { |col| col.sql_type == 'primary_key' }.try(:name)
+    columns(table_name).detect { |col| col.type == :primary_key }.try(:name)
   end
 
   def add_column(table_name, column_name, type, **options)
@@ -325,22 +325,28 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def default_column_arguments(col_def)
     [
       col_def.name.to_s,
-      get_default(col_def),
-      ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type.to_s, limit: col_def.limit),
-      col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
+      default_value(col_def),
+      sql_type_definition(col_def),
+      col_def.null.nil? || col_def.null
     ]
   end
 
-  def get_default(col_def)
-    return nil unless col_def.default.present?
+  def sql_type_definition(col_def)
+    ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(
+      type: col_def.type,
+      sql_type: col_def.type.to_s,
+      limit: col_def.limit
+    )
+  end
 
+  def default_value(col_def)
     if col_def.type == :boolean
       col_def.default ? '1' : '0'
     else
       col_def.default
     end
-
   end
+
   def initialize_args
     [nil, @logger, @config]
   end

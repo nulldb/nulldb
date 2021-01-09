@@ -70,6 +70,7 @@ describe "NullDB" do
         t.date    :hire_date
         t.integer :employee_number
         t.decimal :salary
+        t.boolean :active, default: true
       end
 
       create_table(:employees_widgets, :id => false, :force => true) do |t|
@@ -108,6 +109,7 @@ describe "NullDB" do
     should_have_column(Employee, :hire_date, :date)
     should_have_column(Employee, :employee_number, :integer)
     should_have_column(Employee, :salary, :decimal)
+    should_have_column(Employee, :active, :boolean)
   end
 
   it 'should have limit on name' do
@@ -120,6 +122,10 @@ describe "NullDB" do
 
   it "should return false on non-nullable field" do
     expect(Employee.columns_hash['name'].null).to be false
+  end
+
+  it "should have default on boolean field" do
+    expect(Employee.columns_hash['active'].default).to eq "1"
   end
 
   it "should return the appropriate primary key" do
