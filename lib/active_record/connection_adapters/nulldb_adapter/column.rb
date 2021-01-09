@@ -9,9 +9,9 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
 
     def simplified_type_from_sql_type
       case sql_type
-      when :primary_key
+      when 'primary_key'
         :integer
-      when :string
+      when 'string'
         :string
       end
     end
