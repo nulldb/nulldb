@@ -310,7 +310,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     [
       col_def.name.to_s,
       col_def.default,
-      ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type, limit: col_def.limit),
+      ActiveRecord::ConnectionAdapters::SqlTypeMetadata.new(sql_type: col_def.type.to_s, limit: col_def.limit),
       col_def.null.nil? || col_def.null # cast  [false, nil, true] => [false, true, true], other adapters default to null=true
     ]
   end
