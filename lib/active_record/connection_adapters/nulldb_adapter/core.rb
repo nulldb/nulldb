@@ -325,7 +325,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def default_column_arguments(col_def)
     [
       col_def.name.to_s,
-      default_value(col_def),
+      col_def.default.present? ? col_def.default.to_s : nil,
       sql_type_definition(col_def),
       col_def.null.nil? || col_def.null
     ]
@@ -337,16 +337,6 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       sql_type: col_def.type.to_s,
       limit: col_def.limit
     )
-  end
-
-  def default_value(col_def)
-    return nil unless col_def.default.present?
-
-    if col_def.type == :boolean
-      col_def.default ? '1' : '0'
-    else
-      col_def.default.to_s
-    end
   end
 
   def initialize_args

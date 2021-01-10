@@ -70,7 +70,6 @@ describe "NullDB" do
         t.date    :hire_date
         t.integer :employee_number
         t.decimal :salary
-        t.integer :employee_type, default: 2
         t.boolean :active, default: true
       end
 
@@ -125,16 +124,12 @@ describe "NullDB" do
     expect(Employee.columns_hash['name'].null).to be false
   end
 
-  it "should have default on boolean field" do
-    expect(Employee.columns_hash['active'].default).to eq "1"
+  it "should stringify default values" do
+    expect(Employee.columns_hash['active'].default).to eq "true"
   end
 
   it "should have no default for employee_number" do
     expect(Employee.columns_hash['employee_number'].default).to eq nil
-  end
-
-  it "should stringify defaults" do
-    expect(Employee.columns_hash['employee_type'].default).to eq "2"
   end
 
   it "should return the appropriate primary key" do
