@@ -1,0 +1,26 @@
+name: build
+on: [push, pull_request]
+jobs:
+  test:
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        gemfile: [activerecord_5.2, activerecord_6.0]
+        ruby: ["2.5", "2.6", "2.7", "jruby-9.2.13.0"]
+        experimental: [false]
+        include:
+          - ruby: 2.7
+            gemfile: "activerecord_master"
+            experimental: true
+
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - run: bundle exec rake
