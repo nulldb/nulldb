@@ -11,6 +11,7 @@ jobs:
             activerecord_6.0,
             activerecord_6.1,
             activerecord_7.0,
+            activerecord_7.1,
             activerecord_master,
           ]
         ruby: ["2.5", "2.6", "2.7", "3.0", "jruby-9.3.1.0"]
@@ -29,6 +30,12 @@ jobs:
 
           - ruby: "2.6"
             gemfile: "activerecord_7.0"
+
+          - ruby: "2.5"
+            gemfile: "activerecord_7.1"
+
+          - ruby: "2.6"
+            gemfile: "activerecord_7.1"
 
           - ruby: "jruby-9.3.1.0"
             gemfile: "activerecord_7.0"

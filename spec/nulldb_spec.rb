@@ -488,7 +488,7 @@ describe 'adapter-specific extensions' do
         create_table :extended_models do |t|
           t.citext :text
           t.interval :time_interval
-          t.geometry :feature_geometry, srid: 4326, type: "multi_polygon"
+          t.geometry :feature_geometry
           t.jsonb :jsonb_column
           t.hstore :hstore_column
         end

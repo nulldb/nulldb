@@ -168,14 +168,21 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     EmptyResult.new
   end
 
-  def select_rows(statement, name = nil, binds = [])
+  def internal_exec_query(statement, name = 'SQL', binds = [], options = {})
+    self.execution_log << Statement.new(entry_point, statement)
+    EmptyResult.new
+  end
+
+  def select_rows(statement, name = nil, binds = [], async: nil)
     [].tap do
       self.execution_log << Statement.new(entry_point, statement)
     end
   end
 
-  def insert(statement, name = nil, primary_key = nil, object_id = nil, sequence_name = nil, binds = [])
-    (object_id || next_unique_id).tap do
+  def insert(statement, name = nil, primary_key = nil, object_id = nil, sequence_name = nil, binds = [], returning: nil)
+    return_value = (object_id || next_unique_id)
+    return_value = [return_value] if returning
+    return_value.tap do
       with_entry_point(:insert) do
         super(statement, name, primary_key, object_id, sequence_name)
       end
