@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/nulldb/nulldb"
   s.licenses = ["MIT"]
 
-  s.add_runtime_dependency 'activerecord', '>= 5.2.0', '< 7.1'
+  s.add_runtime_dependency 'activerecord', '>= 5.2.0', '< 7.2'
   s.add_development_dependency 'spec'
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'rspec'
