@@ -64,6 +64,10 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     true
   end
 
+  def create_schema(*args)
+    # NOOP
+  end
+
   def create_table(table_name, options = {})
     table_definition = new_table_definition(self, table_name, options.delete(:temporary), options)
 
