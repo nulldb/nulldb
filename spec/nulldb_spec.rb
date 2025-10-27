@@ -124,8 +124,17 @@ describe "NullDB" do
     expect(Employee.columns_hash['name'].null).to be false
   end
 
-  it "should stringify default values" do
-    expect(Employee.columns_hash['active'].default).to eq "true"
+  # In ActiveRecord 8.1+, immutable default values are type-casted by the Column class
+  # For boolean columns for example, "true" is deserialized to true
+  # https://github.com/rails/rails/commit/205cdd5
+  if ActiveRecord::VERSION::MAJOR >= 8 && ActiveRecord::VERSION::MINOR >= 1
+    it "should deserialize immutable default values" do
+      expect(Employee.columns_hash['active'].default).to eq true
+    end
+  else
+    it "should stringify default values" do
+      expect(Employee.columns_hash['active'].default).to eq "true"
+    end
   end
 
   it "should have no default for employee_number" do

@@ -22,6 +22,10 @@ appraise "activerecord-8.0" do
   gem "activerecord", github: 'rails/rails', branch: "8-0-stable"
 end
 
+appraise "activerecord-8.1" do
+  gem "activerecord", github: 'rails/rails', branch: "8-1-stable"
+end
+
 appraise "activerecord-master" do
   gem "activerecord", github: 'rails/rails', branch: :main
 end

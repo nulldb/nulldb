@@ -358,13 +358,34 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     end
   end
 
+  def native_database_types
+    {}
+  end
+
   def default_column_arguments(col_def)
-    [
-      col_def.name.to_s,
-      col_def.default.present? ? col_def.default.to_s : nil,
-      sql_type_definition(col_def),
-      col_def.null.nil? || col_def.null
-    ]
+    # ActiveRecord 8.1+ expects: name, cast_type, default, sql_type_metadata, null
+    # Earlier versions expect: name, default, sql_type_metadata, null
+    if ::ActiveRecord::VERSION::MAJOR >= 8 && ::ActiveRecord::VERSION::MINOR >= 1
+      cast_type = ActiveRecord::ConnectionAdapters::AbstractAdapter::TYPE_MAP.lookup(col_def.type.to_s)
+      sql_type_meta = sql_type_definition(col_def)
+
+      [
+        col_def.name.to_s,
+        cast_type,
+        col_def.default.present? ? col_def.default.to_s : nil,
+        sql_type_meta,
+        col_def.null.nil? || col_def.null
+      ]
+    else
+      sql_type_meta = sql_type_definition(col_def)
+
+      [
+        col_def.name.to_s,
+        col_def.default.present? ? col_def.default.to_s : nil,
+        sql_type_meta,
+        col_def.null.nil? || col_def.null
+      ]
+    end
   end
 
   def sql_type_definition(col_def)
