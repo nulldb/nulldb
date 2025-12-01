@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "activerecord", "~> 6.0.0"
+gem "activerecord", "~> 8.1.0"
 
 group :development, :test do
   gem "spec"
@@ -15,3 +15,4 @@ group :development do
   gem "appraisal"
   gem "simplecov", require: false
 end
+
