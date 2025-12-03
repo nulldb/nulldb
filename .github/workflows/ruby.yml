@@ -53,7 +53,12 @@ jobs:
             gemfile: "activerecord_master"
           - ruby: "3.1"
             gemfile: "activerecord_master"
-
+          - ruby: "3.4"
+            gemfile: "activerecord_6.1"
+          - ruby: "3.4"
+            gemfile: "activerecord_7.0"
+          - ruby: "3.4"
+            gemfile: "activerecord_7.1"
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
