@@ -127,7 +127,7 @@ describe "NullDB" do
   # In ActiveRecord 8.1+, immutable default values are type-casted by the Column class
   # For boolean columns for example, "true" is deserialized to true
   # https://github.com/rails/rails/commit/205cdd5
-  if ActiveRecord::VERSION::MAJOR >= 8 && ActiveRecord::VERSION::MINOR >= 1
+  if ::ActiveRecord.version >= Gem::Version.new('8.1.a')
     it "should deserialize immutable default values" do
       expect(Employee.columns_hash['active'].default).to eq true
     end
@@ -203,9 +203,9 @@ describe "NullDB" do
     expect( Employee.connection.tables ).to include "schema_info"
   end
 
-  it "should return an empty array from #select" do
+  it "should return an empty result from #select" do
     result = Employee.connection.select_all("who cares", "blah")
-    expect( result ).to eq []
+    expect( result.to_a ).to eq []
   end
 
   it "should provide a way to set log checkpoints" do

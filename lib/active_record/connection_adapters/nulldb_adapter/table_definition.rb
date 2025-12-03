@@ -15,7 +15,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
 
     def unique_constraint(*args, **kwargs, &block); end
 
-    if ::ActiveRecord::VERSION::MAJOR >= 7 && ::ActiveRecord::VERSION::MINOR >= 1
+    if ::ActiveRecord.version >= Gem::Version.new('7.1.a')
       # Avoid check for option validity
       def create_column_definition(name, type, options)
         ActiveRecord::ConnectionAdapters::ColumnDefinition.new(name, type, options)

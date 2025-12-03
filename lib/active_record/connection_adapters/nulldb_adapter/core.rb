@@ -98,7 +98,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   # Rails 6.1+
-  if ActiveRecord::VERSION::MAJOR >= 7 || (ActiveRecord::VERSION::MAJOR >= 6 and ActiveRecord::VERSION::MINOR > 0)
+  if ActiveRecord.version >= Gem::Version.new('6.1.a')
     def remove_index(table_name, column_name = nil, **options )
       index_name = index_name_for_remove(table_name, column_name, options)
       index = @indexes[table_name].reject! { |index| index.name == index_name }
@@ -269,9 +269,23 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   ### Rails 8.0+ ###
-  def perform_query(raw_connection, statement, binds, type_casted_binds, prepare:, notification_payload:, batch:)
-    self.execution_log << Statement.new(entry_point, statement)
-    NullObject.new
+  # Rails 8.2+ uses QueryIntent object, earlier versions use individual arguments
+  # https://github.com/rails/rails/pull/55897
+  if defined?(ActiveRecord::ConnectionAdapters::QueryIntent)
+    def perform_query(raw_connection, intent)
+      self.execution_log << Statement.new(entry_point, intent.processed_sql)
+      ActiveRecord::Result.empty
+    end
+
+    def cast_result(raw_result)
+      # NullDB returns ActiveRecord::Result directly, no casting needed
+      raw_result
+    end
+  else
+    def perform_query(raw_connection, statement, binds, type_casted_binds, prepare:, notification_payload:, batch:)
+      self.execution_log << Statement.new(entry_point, statement)
+      NullObject.new
+    end
   end
 
   def affected_rows(raw_result)
@@ -365,7 +379,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def default_column_arguments(col_def)
     # ActiveRecord 8.1+ expects: name, cast_type, default, sql_type_metadata, null
     # Earlier versions expect: name, default, sql_type_metadata, null
-    if ::ActiveRecord::VERSION::MAJOR >= 8 && ::ActiveRecord::VERSION::MINOR >= 1
+    if ::ActiveRecord.version >= Gem::Version.new('8.1.a')
       cast_type = ActiveRecord::ConnectionAdapters::AbstractAdapter::TYPE_MAP.lookup(col_def.type.to_s)
       sql_type_meta = sql_type_definition(col_def)
 
