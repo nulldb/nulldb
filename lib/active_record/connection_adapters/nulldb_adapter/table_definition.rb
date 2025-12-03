@@ -10,12 +10,15 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
     alias_method :serial, :integer
     alias_method :bigserial, :integer
     alias_method :inet, :string
+    alias_method :timestamptz, :string
+    alias_method :tstzrange, :string
     alias_method :jsonb, :json if method_defined? :json
     alias_method :hstore, :json
 
     def unique_constraint(*args, **kwargs, &block); end
+    def exclusion_constraint(*args); end
 
-    if ::ActiveRecord::VERSION::MAJOR >= 7 && ::ActiveRecord::VERSION::MINOR >= 1
+    if ::ActiveRecord.version >= Gem::Version.new('7.1.a')
       # Avoid check for option validity
       def create_column_definition(name, type, options)
         ActiveRecord::ConnectionAdapters::ColumnDefinition.new(name, type, options)

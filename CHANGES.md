@@ -1,7 +1,16 @@
 Unreleased
 ----------
 
-1.1.1 (20214-11-14)
+1.2.1 (2025-12-02)
+
+- Add `exclusion_constraint` #142
+- Add ActiveRecord 8.2 QueryIntent support #146
+
+1.2.0 (2025-12-01)
+
+- ActiveRecord 8.1 support #143
+
+1.1.1 (2024-11-14)
 
 - Fix syntax error on 2.7 and 3.0.
 

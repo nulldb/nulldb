@@ -1,9 +1,5 @@
-[<img src="https://badge.fury.io/rb/activerecord-nulldb-adapter.png" alt="Gem
-Version" />](http://badge.fury.io/rb/activerecord-nulldb-adapter) [<img
-src="https://codeclimate.com/github/nulldb/nulldb.png"
-/>](https://codeclimate.com/github/nulldb/nulldb) [<img
-src="https://github.com/nulldb/nulldb/workflows/build/badge.svg?branch=master"
-alt="Build Status" />](https://github.com/nulldb/nulldb/actions)
+[<img src="https://badge.fury.io/rb/activerecord-nulldb-adapter.svg" alt="Gem
+Version" />](http://badge.fury.io/rb/activerecord-nulldb-adapter) [![build](https://github.com/nulldb/nulldb/actions/workflows/ruby.yml/badge.svg)](https://github.com/nulldb/nulldb/actions/workflows/ruby.yml)
 
 # The NullDB Connection Adapter Plugin
 
