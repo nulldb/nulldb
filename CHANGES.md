@@ -1,6 +1,10 @@
 Unreleased
 ----------
 
+1.2.2 (2025-12-02)
+
+- Add `timestamptz`, `tstzrange`, `create_schema` #144
+
 1.2.1 (2025-12-02)
 
 - Add `exclusion_constraint` #142
