@@ -14,6 +14,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
     alias_method :hstore, :json
 
     def unique_constraint(*args, **kwargs, &block); end
+    def exclusion_constraint(*args); end
 
     if ::ActiveRecord.version >= Gem::Version.new('7.1.a')
       # Avoid check for option validity
