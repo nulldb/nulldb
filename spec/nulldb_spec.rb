@@ -540,3 +540,16 @@ describe ActiveRecord::ConnectionAdapters::NullDBAdapter::EmptyResult do
     expect( result.cast_values ).to be_empty
   end
 end
+
+describe ActiveRecord::Tasks::NullDBDatabaseTasks do
+  it "creates a task with noop methods matching the expected interface" do
+    task = ActiveRecord::Tasks::NullDBDatabaseTasks.new({})
+    expect( task.create ).to be_nil
+    expect( task.drop ).to be_nil
+    expect( task.purge ).to be_nil
+    expect( task.structure_dump("filename", {}) ).to be_nil
+    expect( task.structure_load("filename", {}) ).to be_nil
+    expect( task.clear_active_connections! ).to be_nil
+    expect( task.check_current_protected_environment!({}, Class.new) ).to be_nil
+  end
+end

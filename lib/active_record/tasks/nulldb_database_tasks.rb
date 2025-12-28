@@ -26,4 +26,8 @@ class ActiveRecord::Tasks::NullDBDatabaseTasks
   def clear_active_connections!
     # NO-OP
   end
+
+  def check_current_protected_environment!(db_config, migration_class)
+    # NO-OP
+  end
 end
