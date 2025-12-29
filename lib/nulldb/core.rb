@@ -1,13 +1,13 @@
-require 'active_support'
-require 'active_support/deprecation'
-require 'active_record/connection_adapters/nulldb_adapter'
+require "active_support"
+require "active_support/deprecation"
+require "active_record/connection_adapters/nulldb_adapter"
 
 module NullDB
   class Configuration < Struct.new(:project_root); end
 
   class << self
     def configure
-      @configuration = Configuration.new.tap {|c| yield c}
+      @configuration = Configuration.new.tap { |c| yield c }
     end
 
     def configuration
@@ -18,12 +18,12 @@ module NullDB
       @configuration
     end
 
-    def nullify(options={})
+    def nullify(options = {})
       begin
         @prev_connection = ActiveRecord::Base.connection_pool.try(:spec)
       rescue ActiveRecord::ConnectionNotEstablished
       end
-      ActiveRecord::Base.establish_connection(options.merge(:adapter => :nulldb))
+      ActiveRecord::Base.establish_connection(options.merge(adapter: :nulldb))
     end
 
     def restore

@@ -1,5 +1,4 @@
 class ActiveRecord::ConnectionAdapters::NullDBAdapter
-
   class TableDefinition < ActiveRecord::ConnectionAdapters::TableDefinition
     attr_accessor :name
     alias_method :enum, :string
@@ -15,10 +14,13 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
     alias_method :jsonb, :json if method_defined? :json
     alias_method :hstore, :json
 
-    def unique_constraint(*args, **kwargs, &block); end
-    def exclusion_constraint(*args); end
+    def unique_constraint(*args, **kwargs, &block)
+    end
 
-    if ::ActiveRecord.version >= Gem::Version.new('7.1.a')
+    def exclusion_constraint(*args)
+    end
+
+    if ::ActiveRecord.version >= Gem::Version.new("7.1.a")
       # Avoid check for option validity
       def create_column_definition(name, type, options)
         ActiveRecord::ConnectionAdapters::ColumnDefinition.new(name, type, options)

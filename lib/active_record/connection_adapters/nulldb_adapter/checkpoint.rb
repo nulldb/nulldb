@@ -1,5 +1,4 @@
 class ActiveRecord::ConnectionAdapters::NullDBAdapter
-
   class Checkpoint < Statement
     def initialize
       super(:checkpoint, "")
@@ -9,5 +8,4 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
       self.class == other.class
     end
   end
-
 end

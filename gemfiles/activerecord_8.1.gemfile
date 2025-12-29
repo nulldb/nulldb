@@ -15,4 +15,3 @@ group :development do
   gem "appraisal"
   gem "simplecov", require: false
 end
-

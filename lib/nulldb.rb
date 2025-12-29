@@ -1,2 +1,2 @@
-require 'nulldb/core'
-require 'nulldb/rails'
+require "nulldb/core"
+require "nulldb/rails"

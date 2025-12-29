@@ -1,1 +1,1 @@
-require 'nulldb'
+require "nulldb"
