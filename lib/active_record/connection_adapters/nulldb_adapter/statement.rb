@@ -1,5 +1,4 @@
 class ActiveRecord::ConnectionAdapters::NullDBAdapter
-
   class Statement
     attr_reader :entry_point, :content
 
@@ -8,8 +7,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
     end
 
     def ==(other)
-      self.entry_point == other.entry_point
+      entry_point == other.entry_point
     end
   end
-
 end

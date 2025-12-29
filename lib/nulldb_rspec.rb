@@ -1,4 +1,4 @@
-require 'active_record/connection_adapters/nulldb_adapter'
+require "active_record/connection_adapters/nulldb_adapter"
 
 module NullDB
   module RSpec
@@ -9,7 +9,6 @@ module NullDB::RSpec::NullifiedDatabase
   NullDBAdapter = ActiveRecord::ConnectionAdapters::NullDBAdapter
 
   class HaveExecuted
-
     def initialize(entry_point)
       @entry_point = entry_point
     end
@@ -17,7 +16,7 @@ module NullDB::RSpec::NullifiedDatabase
     def matches?(connection)
       log = connection.execution_log_since_checkpoint
       if @entry_point == :anything
-        not log.empty?
+        !log.empty?
       else
         log.include?(NullDBAdapter::Statement.new(@entry_point))
       end
@@ -70,8 +69,6 @@ module NullDB::RSpec::NullifiedDatabase
     HaveExecuted.new(entry_point)
   end
 
-  private
-
   def self.included(other)
     if nullify_contextually?(other)
       contextually_nullify_database(other)
@@ -90,7 +87,7 @@ module NullDB::RSpec::NullifiedDatabase
 
   def self.nullify_database(receiver)
     receiver.before :all do
-      ActiveRecord::Base.establish_connection(:adapter => :nulldb)
+      ActiveRecord::Base.establish_connection(adapter: :nulldb)
     end
 
     receiver.before :each do

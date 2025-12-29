@@ -1,7 +1,6 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'nulldb/version'
+require "nulldb/version"
 
 Gem::Specification.new do |s|
   s.name = "activerecord-nulldb-adapter"
@@ -16,16 +15,16 @@ Gem::Specification.new do |s|
     "LICENSE",
     "README.md"
   ]
-  s.files    = `git ls-files`.split($/)
+  s.files = `git ls-files`.split($/)
   s.homepage = "https://github.com/nulldb/nulldb"
   s.licenses = ["MIT"]
 
-  s.add_runtime_dependency 'activerecord', '>= 6.1', '< 8.2'
-  s.add_development_dependency 'spec'
-  s.add_development_dependency 'rdoc'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'appraisal'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'pry-byebug'
+  s.add_runtime_dependency "activerecord", ">= 6.1", "< 8.2"
+  s.add_development_dependency "spec"
+  s.add_development_dependency "rdoc"
+  s.add_development_dependency "rspec"
+  s.add_development_dependency "rake"
+  s.add_development_dependency "appraisal"
+  s.add_development_dependency "simplecov"
+  s.add_development_dependency "pry-byebug"
 end

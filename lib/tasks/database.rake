@@ -13,7 +13,7 @@ end
 def wrap_task(task_name, &wrapper)
   wrapped_task = Rake::Task[task_name]
   remove_task(Rake::Task.scope_name(Rake.application.current_scope,
-                                    task_name))
+    task_name))
   task(task_name) do
     wrapper.call(wrapped_task)
   end

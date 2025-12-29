@@ -1,10 +1,9 @@
 class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::ConnectionAdapters::AbstractAdapter
-
   # A convenience method for integratinginto RSpec.  See README for example of
   # use.
   def self.insinuate_into_spec(config)
     config.before :all do
-      ActiveRecord::Base.establish_connection(:adapter => :nulldb)
+      ActiveRecord::Base.establish_connection(adapter: :nulldb)
     end
 
     config.after :all do
@@ -17,20 +16,20 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   # [+:schema+] path to the schema file, relative to Rails.root
   # [+:table_definition_class_name+] table definition class
   # (e.g. ActiveRecord::ConnectionAdapters::PostgreSQL::TableDefinition for Postgres) or nil.
-  def initialize(config={})
-    @log            = StringIO.new
-    @logger         = Logger.new(@log)
+  def initialize(config = {})
+    @log = StringIO.new
+    @logger = Logger.new(@log)
     @last_unique_id = 0
-    @tables         = {'schema_info' => new_table_definition(nil)}
-    @indexes        = Hash.new { |hash, key| hash[key] = [] }
-    @schema_path    = config.fetch(:schema){ "db/schema.rb" }
-    @config         = config.merge(:adapter => :nulldb)
-    super *initialize_args
+    @tables = {"schema_info" => new_table_definition(nil)}
+    @indexes = Hash.new { |hash, key| hash[key] = [] }
+    @schema_path = config.fetch(:schema) { "db/schema.rb" }
+    @config = config.merge(adapter: :nulldb)
+    super(*initialize_args)
     @visitor ||= Arel::Visitors::ToSql.new self if defined?(Arel::Visitors::ToSql)
 
     if config[:table_definition_class_name]
-      ActiveRecord::ConnectionAdapters::NullDBAdapter.send(:remove_const, 'TableDefinition')
-      ActiveRecord::ConnectionAdapters::NullDBAdapter.const_set('TableDefinition',
+      ActiveRecord::ConnectionAdapters::NullDBAdapter.send(:remove_const, "TableDefinition")
+      ActiveRecord::ConnectionAdapters::NullDBAdapter.const_set(:TableDefinition,
         self.class.const_get(config[:table_definition_class_name]))
     end
 
@@ -53,7 +52,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
   # Inserts a checkpoint in the log.  See also #execution_log_since_checkpoint.
   def checkpoint!
-    self.execution_log << Checkpoint.new
+    execution_log << Checkpoint.new
   end
 
   def adapter_name
@@ -91,26 +90,26 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     options[:unique] = false unless options.key?(:unique)
     column_names = Array.wrap(column_names).map(&:to_s)
 
-    index, index_type, ignore = add_index_options(table_name, column_names, **options)
+    index, index_type, _ = add_index_options(table_name, column_names, **options)
 
-    if index.is_a?(ActiveRecord::ConnectionAdapters::IndexDefinition)
-      @indexes[table_name] << index
+    @indexes[table_name] << if index.is_a?(ActiveRecord::ConnectionAdapters::IndexDefinition)
+      index
     else
       # Rails < 6.1
-      @indexes[table_name] << IndexDefinition.new(table_name, index, (index_type == 'UNIQUE'), column_names, [], [])
+      IndexDefinition.new(table_name, index, index_type == "UNIQUE", column_names, [], [])
     end
   end
 
   # Rails 6.1+
-  if ActiveRecord.version >= Gem::Version.new('6.1.a')
-    def remove_index(table_name, column_name = nil, **options )
+  if ActiveRecord.version >= Gem::Version.new("6.1.a")
+    def remove_index(table_name, column_name = nil, **options)
       index_name = index_name_for_remove(table_name, column_name, options)
-      index = @indexes[table_name].reject! { |index| index.name == index_name }
+      @indexes[table_name].reject! { |index| index.name == index_name }
     end
   else
-    def remove_index(table_name,  options = {} )
+    def remove_index(table_name, options = {})
       index_name = index_name_for_remove(table_name, options)
-      index = @indexes[table_name].reject! { |index| index.name == index_name }
+      @indexes[table_name].reject! { |index| index.name == index_name }
     end
   end
 
@@ -140,14 +139,14 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     if @tables.size <= 1
       ActiveRecord::Migration.verbose = false
       schema_path = if Pathname(@schema_path).absolute?
-                      @schema_path
-                    else
-                      File.join(NullDB.configuration.project_root, @schema_path)
-                    end
+        @schema_path
+      else
+        File.join(NullDB.configuration.project_root, @schema_path)
+      end
       Kernel.load(schema_path)
     end
 
-    if table = @tables[table_name]
+    if (table = @tables[table_name])
       table.columns.map do |col_def|
         col_args = default_column_arguments(col_def)
         ActiveRecord::ConnectionAdapters::NullDBAdapter::Column.new(*col_args)
@@ -163,22 +162,22 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   end
 
   def execute(statement, name = nil)
-    self.execution_log << Statement.new(entry_point, statement)
+    execution_log << Statement.new(entry_point, statement)
     NullObject.new
   end
 
-  def exec_query(statement, name = 'SQL', binds = [], options = {})
+  def exec_query(statement, name = "SQL", binds = [], options = {})
     internal_exec_query(statement, name, binds, **options)
   end
 
-  def internal_exec_query(statement, name = 'SQL', binds = [], prepare: false, async: false)
-    self.execution_log << Statement.new(entry_point, statement)
+  def internal_exec_query(statement, name = "SQL", binds = [], prepare: false, async: false)
+    execution_log << Statement.new(entry_point, statement)
     EmptyResult.new
   end
 
   def select_rows(statement, name = nil, binds = [], async: false)
     [].tap do
-      self.execution_log << Statement.new(entry_point, statement)
+      execution_log << Statement.new(entry_point, statement)
     end
   end
 
@@ -191,39 +190,39 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
     returning ? [result] : result
   end
-  alias :create :insert
+  alias_method :create, :insert
 
-  def update(statement, name=nil, binds = [])
+  def update(statement, name = nil, binds = [])
     with_entry_point(:update) do
       super(statement, name)
     end
   end
 
-  def delete(statement, name=nil, binds = [])
+  def delete(statement, name = nil, binds = [])
     with_entry_point(:delete) do
       super(statement, name)
     end
   end
 
-  def select_all(statement, name=nil, binds = [], options = {})
+  def select_all(statement, name = nil, binds = [], options = {})
     with_entry_point(:select_all) do
       super(statement, name)
     end
   end
 
-  def select_one(statement, name=nil, binds = [])
+  def select_one(statement, name = nil, binds = [])
     with_entry_point(:select_one) do
       super(statement, name)
     end
   end
 
-  def select_value(statement, name=nil, binds = [])
+  def select_value(statement, name = nil, binds = [])
     with_entry_point(:select_value) do
       super(statement, name)
     end
   end
 
-  def select_values(statement, name=nil)
+  def select_values(statement, name = nil)
     with_entry_point(:select_values) do
       super(statement, name)
     end
@@ -265,10 +264,10 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
 
     return unless column
 
-    if default_or_changes.kind_of? Hash
-      column.default = default_or_changes[:to]
+    column.default = if default_or_changes.is_a? Hash
+      default_or_changes[:to]
     else
-      column.default = default_or_changes
+      default_or_changes
     end
   end
 
@@ -277,7 +276,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   # https://github.com/rails/rails/pull/55897
   if defined?(ActiveRecord::ConnectionAdapters::QueryIntent)
     def perform_query(raw_connection, intent)
-      self.execution_log << Statement.new(entry_point, intent.processed_sql)
+      execution_log << Statement.new(entry_point, intent.processed_sql)
       ActiveRecord::Result.empty
     end
 
@@ -287,7 +286,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
     end
   else
     def perform_query(raw_connection, statement, binds, type_casted_binds, prepare:, notification_payload:, batch:)
-      self.execution_log << Statement.new(entry_point, statement)
+      execution_log << Statement.new(entry_point, statement)
       NullObject.new
     end
   end
@@ -321,7 +320,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def select(statement, name = nil, binds = [], prepare: nil, async: nil, allow_retry: nil)
     EmptyResult.new.tap do |r|
       r.bind_column_meta(columns_for(name))
-      self.execution_log << Statement.new(entry_point, statement)
+      execution_log << Statement.new(entry_point, statement)
     end
   end
 
@@ -383,7 +382,7 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
   def default_column_arguments(col_def)
     # ActiveRecord 8.1+ expects: name, cast_type, default, sql_type_metadata, null
     # Earlier versions expect: name, default, sql_type_metadata, null
-    if ::ActiveRecord.version >= Gem::Version.new('8.1.a')
+    if ::ActiveRecord.version >= Gem::Version.new("8.1.a")
       cast_type = ActiveRecord::ConnectionAdapters::AbstractAdapter::TYPE_MAP.lookup(col_def.type.to_s)
       sql_type_meta = sql_type_definition(col_def)
 
@@ -436,8 +435,8 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter < ActiveRecord::Connection
       override: true
     )
 
-    ActiveRecord::Type.add_modifier({ array: true }, DummyOID, adapter: :nulldb)
-    ActiveRecord::Type.add_modifier({ range: true }, DummyOID, adapter: :nulldb)
+    ActiveRecord::Type.add_modifier({array: true}, DummyOID, adapter: :nulldb)
+    ActiveRecord::Type.add_modifier({range: true}, DummyOID, adapter: :nulldb)
   end
 
   class << self

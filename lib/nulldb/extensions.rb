@@ -19,7 +19,9 @@ unless respond_to?(:try)
   end
 
   class NilClass
-    def try(*args); nil; end
+    def try(*args)
+      nil
+    end
   end
 end
 

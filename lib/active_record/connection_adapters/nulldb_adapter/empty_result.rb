@@ -1,16 +1,12 @@
 class ActiveRecord::ConnectionAdapters::NullDBAdapter
-
   class EmptyResult < Array
-    attr_reader :column_types
-    
     def bind_column_meta(columns)
       @columns = columns
       return if columns.empty?
 
-      @column_types = columns.reduce({}) do |ctypes, col|
+      @column_types = columns.each_with_object({}) do |col, ctypes|
         ctypes[col.name] = ActiveRecord::Type.lookup(col.type)
-        ctypes
-      end      
+      end
     end
 
     def columns
@@ -29,13 +25,12 @@ class ActiveRecord::ConnectionAdapters::NullDBAdapter
       []
     end
 
-    def >(num)
-      rows.size > num
+    def >(other)
+      rows.size > other
     end
 
     def includes_column?(name)
       false
     end
   end
-
 end
